@@ -10,6 +10,15 @@ const db = require('./models');
 
 const app = express();
 
+// import connectSession from 'connect-session-sequelize'
+// const SequelizeStore = connectSession(session.Store);
+
+// const sessionStore = new SequelizeStore({
+//   db: db.sequelize,
+//   expiration: 1000 * 60 * 30
+// });
+
+
 app.use(require('morgan')('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -20,7 +29,10 @@ app.use(ExpressSession({
   secret: process.env.SESSION_SECRET as string,
   resave: false,
   saveUninitialized: true
+  // store: sessionStore
 }));
+
+// sessionStore.sync();
 
 app.use(passport.initialize());
 app.use(passport.session());

@@ -10,13 +10,12 @@ const db = require('./models');
 
 const app = express();
 
-// import connectSession from 'connect-session-sequelize'
-// const SequelizeStore = connectSession(session.Store);
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
-// const sessionStore = new SequelizeStore({
-//   db: db.sequelize,
-//   expiration: 1000 * 60 * 30
-// });
+const sessionStore = new SequelizeStore({
+  db: db.sequelize,
+  expiration: 1000 * 60 * 30
+});
 
 
 app.use(require('morgan')('dev'));
@@ -28,11 +27,11 @@ app.use(express.static(__dirname + '/../client/build'))
 app.use(ExpressSession({
   secret: process.env.SESSION_SECRET as string,
   resave: false,
-  saveUninitialized: true
-  // store: sessionStore
+  saveUninitialized: true,
+  store: sessionStore
 }));
 
-// sessionStore.sync();
+sessionStore.sync();
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -41,6 +40,7 @@ import authRouter from './routes/auth';
 app.use('/auth', authRouter)
 
 import apiRouter from './routes/api';
+import session from 'express-session';
 app.use('/api', apiRouter);
 
 app.get('*', (req, res) => {
